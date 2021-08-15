@@ -12,12 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Run a multi-line script
+      - name: Install deps
+        run : |
+          sudo apt-get install wget -y && sudo wget https://raw.githubusercontent.com/akhilnarang/scripts/master/setup/android_build_env.sh && sudo bash android*
+      - name: Extractor
         run: |
           sudo mkdir dumper
           cd dumper
-          sudo wget https://sourceforge.net/projects/ashwin-rom-builds/files/Ginkgo/Project_Sakura/20210618/ProjectSakura-5.1-VANILLA-20210617-1731-ginkgo-UNOFFICIAL.zip
+          sudo wget -q https://sourceforge.net/projects/ashwin-rom-builds/files/Ginkgo/Project_Sakura/20210618/ProjectSakura-5.1-VANILLA-20210617-1731-ginkgo-UNOFFICIAL.zip
           sudo mkdir dump
           sudo unzip -o *.zip -d dump
           cd dump
