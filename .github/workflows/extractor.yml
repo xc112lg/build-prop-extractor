@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo mkdir dumper
           cd dumper
-          sudo wget -q https://sourceforge.net/projects/ashwin-rom-builds/files/Ginkgo/Project_Sakura/20210618/ProjectSakura-5.1-VANILLA-20210617-1731-ginkgo-UNOFFICIAL.zip
+          sudo wget -q http://downloads.codefi.re/autoprime/LG/LG_G6/H872/H87210e/system.zip
           sudo mkdir dump
           sudo unzip -o *.zip -d dump
           cd dump
