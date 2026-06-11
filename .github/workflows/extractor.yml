@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo mkdir dumper
           cd dumper
-          sudo wget -q http://downloads.codefi.re/autoprime/LG/LG_G6/H872/H87210e/system.zip
+          sudo wget -q https://bigota.d.miui.com/V12.5.16.0.RCZMIXM/miui-blockota-dandelion_c3l2_global-V12.5.15.0.RCZMIXM-V12.5.16.0.RCZMIXM-93900872f4-11.0.zip
           sudo mkdir dump
           sudo unzip -o *.zip -d dump
           cd dump
