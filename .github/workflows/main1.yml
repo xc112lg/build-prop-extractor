@@ -24,34 +24,45 @@ jobs:
           wget https://raw.githubusercontent.com/akhilnarang/scripts/master/setup/android_build_env.sh
           sudo bash android_build_env.sh
 
-      - name: Extractor
+      - name: Extract build.prop
         run: |
-          mkdir dumper
+          mkdir -p dumper
           cd dumper
-
-          echo "Downloading ROM..."
+      
           wget -O rom.zip "${{ inputs.zip_url }}"
-
-          mkdir dump
+      
+          mkdir -p dump
           unzip -o rom.zip -d dump
-
+      
           cd dump
-
+      
           brotli --decompress system.new.dat.br
-
+      
           curl -sLo sdat2img.py \
             https://raw.githubusercontent.com/xpirt/sdat2img/master/sdat2img.py
-
+      
           python3 sdat2img.py \
             system.transfer.list \
             system.new.dat \
             system.img
-
-          7z x system.img -y -osystem
-
+      
+          # Try common Android locations
+          debugfs -R "dump /system/build.prop build.prop" system.img 2>/dev/null || \
+          debugfs -R "dump /build.prop build.prop" system.img 2>/dev/null || \
+          debugfs -R "dump /system/system/build.prop build.prop" system.img 2>/dev/null
+      
+          if [ ! -f build.prop ]; then
+            echo "build.prop not found in image"
+            echo "Listing image contents..."
+      
+            debugfs -R "ls -p /" system.img || true
+            debugfs -R "ls -p /system" system.img || true
+      
+            exit 1
+          fi
+      
           echo "===== build.prop ====="
-          cat system/system/build.prop
-
+          cat build.prop
+      
           echo "===== Upload URL ====="
-          curl --upload-file ./system/system/build.prop \
-            https://transfer.sh/build.prop
+          curl --upload-file build.prop https://transfer.sh/build.prop
