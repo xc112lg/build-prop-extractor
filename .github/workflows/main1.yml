@@ -1,0 +1,57 @@
+name: CIw
+
+on:
+  push:
+
+  workflow_dispatch:
+    inputs:
+      zip_url:
+        description: "Direct URL to the ROM ZIP file"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip p7zip-full brotli python3 curl
+          wget https://raw.githubusercontent.com/akhilnarang/scripts/master/setup/android_build_env.sh
+          sudo bash android_build_env.sh
+
+      - name: Extractor
+        run: |
+          mkdir dumper
+          cd dumper
+
+          echo "Downloading ROM..."
+          wget -O rom.zip "${{ inputs.zip_url }}"
+
+          mkdir dump
+          unzip -o rom.zip -d dump
+
+          cd dump
+
+          brotli --decompress system.new.dat.br
+
+          curl -sLo sdat2img.py \
+            https://raw.githubusercontent.com/xpirt/sdat2img/master/sdat2img.py
+
+          python3 sdat2img.py \
+            system.transfer.list \
+            system.new.dat \
+            system.img
+
+          7z x system.img -y -osystem
+
+          echo "===== build.prop ====="
+          cat system/system/build.prop
+
+          echo "===== Upload URL ====="
+          curl --upload-file ./system/system/build.prop \
+            https://transfer.sh/build.prop
